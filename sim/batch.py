@@ -491,14 +491,14 @@ def v56_batch5b():
 def setRunCfg(b, type='mpi_bulletin', nodes=1, coresPerNode=8):
     if type=='mpi_bulletin':
         b.runCfg = {'type': 'mpi_bulletin', 
-            'script': 'init.py', 
+            'script': 'init_cell.py', 
             'skip': True}
 
     elif type=='mpi_direct':
         b.runCfg = {'type': 'mpi_direct',
-            'cores': 4,
+            'cores': 1,
             'script': 'init_cell.py',
-            'mpiCommand': 'mpirun',
+            'mpiCommand': 'mpiexec',
             'skip': True}
 
     elif type=='hpc_torque':
@@ -579,5 +579,5 @@ if __name__ == '__main__':
 
     b.saveFolder = '../data/'+b.batchLabel
     b.method = 'grid'  # evol
-    setRunCfg(b, 'mpi_bulletin')  # cores = nodes * 8
+    setRunCfg(b, 'mpi_direct')  # cores = nodes * 8
     b.run() # run batch 

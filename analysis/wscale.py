@@ -169,7 +169,7 @@ if __name__ == '__main__':
     # run batch E cells
     
     dataFolder = '../data/'
-    batchLabel = 'batch_2023-11-15'   # v52_batch3'
+    batchLabel = 'batch_2023-12-13'   # v52_batch3'
     loadFromFile = 1
 
     ''' run via batch.py

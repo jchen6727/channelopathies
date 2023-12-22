@@ -92,7 +92,7 @@ def readBatchData(dataFolder, batchLabel, loadAll=False, saveAll=True, vars=None
     # load from previously saved file with all data
     if loadAll:
         print('\nLoading single file with all data...')
-        filename = '%s/%s/%s_allData.json' % (dataFolder, batchLabel, batchLabel)
+        filename = '%s/%s/%s_allData.pkl' % (dataFolder, batchLabel, batchLabel)
         with open(filename, 'r') as fileObj:
             dataLoad = json.load(fileObj, object_pairs_hook=OrderedDict)
         params = dataLoad['params']
@@ -129,14 +129,15 @@ def readBatchData(dataFolder, batchLabel, loadAll=False, saveAll=True, vars=None
         missing = 0
         for i,(iComb, pComb) in enumerate(zip(indexCombinations, valueCombinations)):
             if (not maxCombs or i<= maxCombs) and (not listCombs or list(pComb) in listCombs):
-                print(i, iComb)
+                #print(i, iComb) # stop flooding screen
                 # read output file
                 iCombStr = ''.join([''.join('_'+str(i)) for i in iComb])
                 simLabel = b['batchLabel']+iCombStr
-                outFile = b['saveFolder']+'/'+simLabel+'.json'
+                outFile = b['saveFolder']+'/'+simLabel+'_data.pkl'
+                #print(outFile)
                 try:
-                    with open(outFile, 'r') as fileObj:
-                        output = json.load(fileObj, object_pairs_hook=OrderedDict)
+                    with open(outFile, 'rb') as fileObj:
+                        output = pickle.load(fileObj, object_pairs_hook=OrderedDict)
                     # save output file in data dict
                     data[iCombStr] = {}  
                     data[iCombStr]['paramValues'] = pComb  # store param values
@@ -151,9 +152,10 @@ def readBatchData(dataFolder, batchLabel, loadAll=False, saveAll=True, vars=None
 
                         elif isinstance(key, basestring): 
                             data[iCombStr][key] = output[key]
+                    print("read data from {}".format(outFile))
 
                 except:
-                    print('... file missing')
+                    #print('... file missing') # clutters terminal, useless statement
                     missing = missing + 1
                     output = {}
             else:
@@ -164,9 +166,9 @@ def readBatchData(dataFolder, batchLabel, loadAll=False, saveAll=True, vars=None
         # save
         if saveAll:
             print('Saving to single file with all data')
-            filename = '%s/%s/%s_allData.json' % (dataFolder, batchLabel, batchLabel)
+            filename = '%s/%s/%s_allData.pkl' % (dataFolder, batchLabel, batchLabel)
             dataSave = {'params': params, 'data': data}
-            with open(filename, 'w') as fileObj:
+            with open(filename, 'wb') as fileObj:
                 json.dump(dataSave, fileObj)
         
         return params, data
