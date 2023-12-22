@@ -1,5 +1,5 @@
 import utils
-
+updated to do this
 
 dataFolder = '../data/'
 batchLabel = 'batch_2023-12-13'   # v52_batch3'
