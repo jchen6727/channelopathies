@@ -88,7 +88,7 @@ def compare(source_file, target_file, source_key=None, target_key=None):
     return ddiff
 
 
-def readBatchData(dataFolder, batchLabel, loadAll=False, saveAll=True, vars=None, maxCombs=None, listCombs=None):
+def readBatchData(dataFolder, batchLabel, loadAll=True, saveAll=True, vars=None, maxCombs=None, listCombs=None):
     # load from previously saved file with all data
     if loadAll:
         print('\nLoading single file with all data...')
@@ -133,8 +133,7 @@ def readBatchData(dataFolder, batchLabel, loadAll=False, saveAll=True, vars=None
                 # read output file
                 iCombStr = ''.join([''.join('_'+str(i)) for i in iComb])
                 simLabel = b['batchLabel']+iCombStr
-                outFile = b['saveFolder']+'/'+simLabel+'_data.pkl'
-                #print(outFile)
+                outFile = b['saveFolder']+'/'+simLabel+'_data.json'
                 try:
                     with open(outFile, 'rb') as fileObj:
                         output = pickle.load(fileObj, object_pairs_hook=OrderedDict)
