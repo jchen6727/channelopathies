@@ -66,16 +66,6 @@ cellParamLabels = ['PT5B_full'] #'NGF_simple', 'VIP_reduced'] # list of cell rul
 loadCellParams = cellParamLabels
 saveCellParams = False #True
 
-for ruleLabel in loadCellParams:
-    netParams.loadCellParamsRule(label=ruleLabel, fileName='cells/'+ruleLabel+'_cellParams.pkl')
-    
-    # Adapt K gbar
-    if ruleLabel in ['IT2_reduced', 'IT4_reduced', 'IT5A_reduced', 'IT5B_reduced', 'IT6_reduced', 'CT6_reduced', 'IT5A_full']:
-        cellRule = netParams.cellParams[ruleLabel]
-        for secName in cellRule['secs']:
-            for kmech in [k for k in cellRule['secs'][secName]['mechs'].keys() if k.startswith('k') and k!='kBK']:
-                cellRule['secs'][secName]['mechs'][kmech]['gbar'] *= cfg.KgbarFactor 
-
 #------------------------------------------------------------------------------
 # Specification of cell rules not previously loaded
 # Includes importing from hoc template or python class, and setting additional params
@@ -116,16 +106,8 @@ if 'PT5B_full' not in loadCellParams:
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-## load densities
-with open('cells/cellDensity.pkl', 'rb') as fileObj: density = pickle.load(fileObj)['density']
-
 ## Local populations
-
-
-netParams.popParams['PT5B'] = {'cellModel': cfg.cellmod['PT5B'], 'cellType': 'PT', 'ynormRange': layer['5B'], 'density': 0.5*density[('M1','E')][3]}
-
-if cfg.singleCellPops:
-    for pop in netParams.popParams.values(): pop['numCells'] = 1
+netParams.popParams['PT5B'] = {'cellModel': 'HH_full', 'cellType': 'PT', 'numCells': 1}
 
 #------------------------------------------------------------------------------
 # Synaptic mechanism parameters
@@ -142,59 +124,37 @@ SOMESynMech = ['GABAASlow','GABAB']
 SOMISynMech = ['GABAASlow']
 PVSynMech = ['GABAA']
 
-
-#------------------------------------------------------------------------------
-# Current inputs (IClamp)
-#------------------------------------------------------------------------------
-if cfg.addIClamp:
-    for key in [k for k in dir(cfg) if k.startswith('IClamp')]:
-        params = getattr(cfg, key, None)
-        [pop,sec,loc,start,dur,amp] = [params[s] for s in ['pop','sec','loc','start','dur','amp']]
-
-        #cfg.analysis['plotTraces']['include'].append((pop,0))  # record that pop
-
-        # add stim source
-        netParams.stimSourceParams[key] = {'type': 'IClamp', 'delay': start, 'dur': dur, 'amp': amp}
-        
-        # connect stim source to target
-        netParams.stimTargetParams[key+'_'+pop] =  {
-            'source': key, 
-            'conds': {'pop': pop},
-            'sec': sec, 
-            'loc': loc}
-
 #------------------------------------------------------------------------------
 # NetStim inputs
 #------------------------------------------------------------------------------
-if cfg.addNetStim:
-    for key in [k for k in dir(cfg) if k.startswith('NetStim')]:
-        params = getattr(cfg, key, None)
-        [pop, ynorm, sec, loc, synMech, synMechWeightFactor, start, interval, noise, number, weight, delay] = \
-        [params[s] for s in ['pop', 'ynorm', 'sec', 'loc', 'synMech', 'synMechWeightFactor', 'start', 'interval', 'noise', 'number', 'weight', 'delay']] 
 
+for key in [k for k in dir(cfg) if k.startswith('NetStim')]:
+    params = getattr(cfg, key, None)
+    [pop, ynorm, sec, loc, synMech, synMechWeightFactor, start, interval, noise, number, weight, delay] = \
+    [params[s] for s in ['pop', 'ynorm', 'sec', 'loc', 'synMech', 'synMechWeightFactor', 'start', 'interval', 'noise', 'number', 'weight', 'delay']]
         # cfg.analysis['plotTraces']['include'] = [(pop,0)]
 
-        if synMech == ESynMech:
-            wfrac = cfg.synWeightFractionEE
-        elif synMech == SOMESynMech:
-            wfrac = cfg.synWeightFractionSOME
-        else:
-            wfrac = [1.0]
+    if synMech == ESynMech:
+        wfrac = cfg.synWeightFractionEE
+    elif synMech == SOMESynMech:
+        wfrac = cfg.synWeightFractionSOME
+    else:
+        wfrac = [1.0]
 
-        # add stim source
-        netParams.stimSourceParams[key] = {'type': 'NetStim', 'start': start, 'interval': interval, 'noise': noise, 'number': number}
+    # add stim source
+    netParams.stimSourceParams[key] = {'type': 'NetStim', 'start': start, 'interval': interval, 'noise': noise, 'number': number}
 
-        # connect stim source to target
-        # for i, syn in enumerate(synMech):
-        netParams.stimTargetParams[key+'_'+pop] =  {
-            'source': key, 
-            'conds': {'pop': pop, 'ynorm': ynorm},
-            'sec': sec, 
-            'loc': loc,
-            'synMech': synMech,
-            'weight': weight,
-            'synMechWeightFactor': synMechWeightFactor,
-            'delay': delay}
+    # connect stim source to target
+    # for i, syn in enumerate(synMech):
+    netParams.stimTargetParams[key+'_'+pop] =  {
+        'source': key,
+        'conds': {'pop': pop, 'ynorm': ynorm},
+        'sec': sec,
+        'loc': loc,
+        'synMech': synMech,
+        'weight': weight,
+        'synMechWeightFactor': synMechWeightFactor,
+        'delay': delay}
 
 #------------------------------------------------------------------------------
 # Local connectivity parameters

@@ -21,7 +21,7 @@ cfg = specs.SimConfig()
 #------------------------------------------------------------------------------
 # Run parameters
 #------------------------------------------------------------------------------
-cfg.duration = 1*1e3 
+cfg.duration = 1*1e3
 cfg.dt = 0.025
 cfg.seeds = {'conn': 4321, 'stim': 1234, 'loc': 4321} 
 cfg.hParams = {'celsius': 34, 'v_init': -80}  
@@ -178,23 +178,6 @@ cfg.IIweights = [1.2, 1.0, 1.0]
 cfg.IPTGain = 1.0
 cfg.IFullGain = 1.0
 
-#------------------------------------------------------------------------------
-# Subcellular distribution
-#------------------------------------------------------------------------------
-cfg.addSubConn = None
-
-
-## input pulses
-#cfg.addPulses = 1
-#cfg.pulse = {'pop': 'None', 'start': 1000, 'end': 1200, 'rate': [0, 20], 'noise': 0.8}
-#cfg.pulse2 = {'pop': 'None', 'start': 1000, 'end': 1200, 'rate': [0, 20], 'noise': 0.5, 'duration': 500}
-
-
-#------------------------------------------------------------------------------
-# Current inputs 
-#------------------------------------------------------------------------------
-cfg.addIClamp = 0
-
 #cfg.IClamp1 = {'pop': ['PT5B'], 'sec': 'soma', 'loc': 0.5, 'start': 0, 'dur': 1000, 'amp': 0.50}
 
 #IT5B
@@ -202,9 +185,8 @@ cfg.addIClamp = 0
 #------------------------------------------------------------------------------
 # NetStim inputs
 #------------------------------------------------------------------------------
-cfg.addNetStim = 0
 
  			   ## pop, sec, loc, synMech, start, interval, noise, number, weight, delay 
-cfg.NetStim1 = {'pop': ['PT5B'], 'ynorm':[0,1], 'sec': 'soma', 'loc': 0.5, 'synMech': ['NMDA'], 'synMechWeightFactor': [0.5, 0.5],
+cfg.NetStim = {'pop': ['PT5B'], 'ynorm':[0,1.0], 'sec': 'soma', 'loc': 0.5, 'synMech': ['AMPA', 'NMDA'], 'synMechWeightFactor': [0.5, 0.5],
 				'start': 700, 'interval': 1000, 'noise': 0.0, 'number': 1, 'weight': 30.0, 'delay': 1}
 
